@@ -18,7 +18,7 @@ TEAMS_WEBHOOK_URL = os.getenv('TEAMS_WEBHOOK')
 def process_sqs_p1_message():
     while True:
         try:
-            # Receive a message from the SQS queue
+            # Receive the message from the SQS queue
             response = sqs_client.receive_message(
                 QueueUrl=QUEUE_URL,
                 MaxNumberOfMessages=1,
@@ -36,8 +36,8 @@ def process_sqs_p1_message():
             print(f"Received message: {message_body}")
 
 
-            title = message_body.get('title', 'No Title')
-            description = message_body.get('description', 'No Description')
+            title = message_body.get('title')
+            description = message_body.get('description')
 
             # Sending the message to teams
             print("Sending message to Microsoft Teams...")
@@ -59,8 +59,7 @@ def process_sqs_p1_message():
 
 
 if __name__ == '__main__':
-    # Run the SQS processing function in a separate thread
+    # Run the function in a separate thread
     threading.Thread(target=process_sqs_p1_message, daemon=True).start()
 
-    # Start the Flask app
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
