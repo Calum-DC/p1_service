@@ -78,10 +78,3 @@ if __name__ == "__main__":
         print("Shutting down...")
         stop_flag = True
         background_thread.join()
-
-
-# if __name__ == '__main__':
-#     # Run the function in a separate thread
-#     threading.Thread(target=, daemon=True).start()
-
-#     app.run(debug=True, port=5001)
