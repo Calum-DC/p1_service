@@ -14,9 +14,11 @@ sqs_client = boto3.client('sqs', region_name=os.getenv('AWS_REGION'))
 QUEUE_URL = os.getenv('SQS_P1_URL')
 TEAMS_WEBHOOK_URL = os.getenv('TEAMS_WEBHOOK')
 
+stop_flag = False
 
 def process_sqs_p1_message():
-    while True:
+    global stop_flag
+    while not stop_flag:
         try:
             # Receive the message from the SQS queue
             response = sqs_client.receive_message(
@@ -57,13 +59,29 @@ def process_sqs_p1_message():
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
-@app.route('/health', methods=["GET"])
+@app.route("/health", methods=["GET"])
 def health_check():
-    return "Everything is A-OK"
+    return jsonify({"status": "healthy"}), 200
 
 
-if __name__ == '__main__':
-    # Run the function in a separate thread
-    threading.Thread(target=process_sqs_p1_message, daemon=True).start()
+def background_thread():
+    sqs_thread = threading.Thread(target=process_sqs_p1_message, daemon=True)
+    sqs_thread.start()
+    return sqs_thread
 
-    app.run(debug=True, port=5001)
+background_thread = background_thread()
+
+if __name__ == "__main__":
+    try:
+        app.run(host="0.0.0.0", port=8001)
+    except KeyboardInterrupt:
+        print("Shutting down...")
+        stop_flag = True
+        background_thread.join()
+
+
+# if __name__ == '__main__':
+#     # Run the function in a separate thread
+#     threading.Thread(target=, daemon=True).start()
+
+#     app.run(debug=True, port=5001)
