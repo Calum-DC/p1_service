@@ -1,4 +1,4 @@
-FROM python
+FROM python:3.12-slim
 
 ENV TEAMS_WEBHOOK=""
 ENV SQS_P1_URL=""
