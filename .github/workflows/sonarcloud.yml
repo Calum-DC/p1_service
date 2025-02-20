@@ -13,26 +13,24 @@ jobs:
         with:
           fetch-depth: 0  
 
+      # Triggering SonarQube analysis as results of it are required by Quality Gate check.
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          
-      # Check SonarCloud Quality Gate status
-      - name: Check Quality Gate status
-        run: |
-          # Make an API call to SonarCloud to get the Quality Gate status
-          result=$(curl -s -u ${{ secrets.SONAR_TOKEN }} "https://sonarcloud.io/api/qualitygates/project_status?projectKeyCalum-DC_p1_service")
-          status=$(echo $result | jq -r '.projectStatus.status')
-          
-          # Check if the Quality Gate status is "OK" (success)
-          if [ "$status" != "OK" ]; then
-            echo "Quality Gate failed: $status"
-            exit 1  # Exit with status 1 to fail the job
-          else
-            echo "Quality Gate passed"
-          fi
-        continue-on-error: false 
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+
+      # Check the Quality Gate status.
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  
+
+      # Optionally you can use the output from the Quality Gate in another step.
+      # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
