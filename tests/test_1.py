@@ -1,7 +1,10 @@
 import json
-import main
-from main import app
-
+import pytest
+from unittest.mock import patch, Mock
+from flask.testing import FlaskClient
+import boto3
+from moto import mock_aws
+import os
 
 def test_health_check(client):
     """Test to ensure the /health route is working."""
