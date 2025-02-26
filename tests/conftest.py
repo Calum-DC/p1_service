@@ -21,6 +21,6 @@ def client():
 
 @pytest.fixture(scope='function')
 def sqs_client(aws_credentials):
-    with mock_aws():
-        yield boto3.client('sqs', region_name=REGION)
-
+    with mock_sqs():
+        sqs = boto3.client('sqs', region_name=REGION)
+        yield sqs
