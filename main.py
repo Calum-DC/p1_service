@@ -9,7 +9,7 @@ import threading
 app = Flask(__name__)
 
 # Load environment variables
-load_dotenv()
+
 sqs_client = boto3.client('sqs', region_name=os.getenv('AWS_REGION'))
 QUEUE_URL = os.getenv('SQS_P1_URL')
 TEAMS_WEBHOOK_URL = os.getenv('TEAMS_WEBHOOK')
