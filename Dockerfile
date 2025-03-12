@@ -6,6 +6,7 @@ ENV AWS_REGION=""
 ENV AWS_ACCESS_KEY_ID=""
 ENV AWS_SECRET_ACCESS_KEY=""
 
+
 WORKDIR /p1_service
 COPY . /p1_service
 RUN pip install -r requirements.txt
