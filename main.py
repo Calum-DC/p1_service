@@ -76,12 +76,13 @@ def process_sqs_p1_message():
             response_text = model_response["results"][0]["outputText"]
             print(response_text)
 
-   
+            formatted_message = f"Bug report description:\n{description}\n\nSuggested solution:\n{response_text}"
+
             # Sending the message to teams
             print("Sending message to Microsoft Teams...")
             teams_message = pymsteams.connectorcard(TEAMS_WEBHOOK_URL)
             teams_message.title(f"Priority 1 Bug: {title}")
-            teams_message.text(f"Bug report description:\n{description}\n\nSuggested solution:\n{response_text}")
+            teams_message.text(formatted_message)
             teams_message.send()
             print("Message successfully sent to Teams.")
 
