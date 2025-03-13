@@ -57,7 +57,7 @@ def process_sqs_p1_message():
             native_request = {
                 "inputText": prompt,
                 "textGenerationConfig": {
-                    "maxTokenCount": 1024,
+                    "maxTokenCount": 512,
                     "temperature": 0.3,
                 },
             }
