@@ -41,49 +41,49 @@ def process_sqs_p1_message():
             description = message_body.get('description')
 
 
-            # # Use the native inference API to send a text message to Amazon Titan Text
-            # # and print the response stream.
+            # Use the native inference API to send a text message to Amazon Titan Text
+            # and print the response stream.
 
-            # # Create a Bedrock Runtime client in the AWS Region of your choice.
-            # client = boto3.client("bedrock-runtime", region_name="us-east-1")
+            # Create a Bedrock Runtime client in the AWS Region of your choice.
+            client = boto3.client("bedrock-runtime", region_name="us-east-1")
 
-            # # Set the model ID, e.g., Titan Text Premier.
-            # model_id = "amazon.titan-text-express-v1"
+            # Set the model ID, e.g., Titan Text Premier.
+            model_id = "amazon.titan-text-express-v1"
 
-            # # Define the prompt for the model.
-            # prompt = "The following passage of text outlines an issue that has been reported via an online web form, please pretend you are an IT support engineer and provide a solution to the problem or statement given, also be aware that this message will be read by a recipient that is unable to provide any additional information. Dont' write too much or say that you are a model responding to the problem and please provide a structured solution that clearly outlines a solution: " + description
+            # Define the prompt for the model.
+            prompt = "The following passage of text outlines an issue that has been reported via an online web form, please pretend you are an IT support engineer and provide a solution to the problem or statement given, also be aware that this message will be read by a recipient that is unable to provide any additional information. Dont' write too much and definitely dont say that you are a model responding to the problem. Please provide a structured solution that clearly outlines a solution: " + description
 
-            # # Format the request payload using the model's native structure.
-            # native_request = {
-            #     "inputText": prompt,
-            #     "textGenerationConfig": {
-            #         "maxTokenCount": 1024,
-            #         "temperature": 0.3,
-            #     },
-            # }
+            # Format the request payload using the model's native structure.
+            native_request = {
+                "inputText": prompt,
+                "textGenerationConfig": {
+                    "maxTokenCount": 1024,
+                    "temperature": 0.3,
+                },
+            }
 
-            # # Convert the native request to JSON.
-            # ai_request = json.dumps(native_request)
+            # Convert the native request to JSON.
+            ai_request = json.dumps(native_request)
 
-            # # Invoke the model with the request.
-            # ai_response = client.invoke_model(
-            #     modelId=model_id, body=ai_request
-            # )
+            # Invoke the model with the request.
+            ai_response = client.invoke_model(
+                modelId=model_id, body=ai_request
+            )
 
-            # # Decode the response body.
-            # model_response = json.loads(ai_response["body"].read())
+            # Decode the response body.
+            model_response = json.loads(ai_response["body"].read())
 
-            # # Extract and print the response text.
-            # response_text = model_response["results"][0]["outputText"]
-            # print(response_text)
+            # Extract and print the response text.
+            response_text = model_response["results"][0]["outputText"]
+            print(response_text)
 
-            # formatted_message = f"**Bug report description:**\n\n{description}\n\n\n**Suggested solution:**\n\n{response_text}"
+            formatted_message = f"**Bug report description:**\n\n{description}\n\n\n**Suggested solution:**\n\n{response_text}"
             
             # Sending the message to teams
             print("Sending message to Microsoft Teams...")
             teams_message = pymsteams.connectorcard(TEAMS_WEBHOOK_URL)
             teams_message.title(f"Priority 1 Bug: {title}")
-            teams_message.text(description)
+            teams_message.text(formatted_message)
             teams_message.send()
             print("Message successfully sent to Teams.")
 
