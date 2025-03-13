@@ -9,7 +9,7 @@ import threading
 app = Flask(__name__)
 
 # Load environment variables
-
+load_dotenv()
 sqs_client = boto3.client('sqs', region_name=os.getenv('AWS_REGION'))
 QUEUE_URL = os.getenv('SQS_P1_URL')
 TEAMS_WEBHOOK_URL = os.getenv('TEAMS_WEBHOOK')
@@ -43,7 +43,6 @@ def process_sqs_p1_message():
 
             # Use the native inference API to send a text message to Amazon Titan Text
             # and print the response stream.
-
             # Create a Bedrock Runtime client in the AWS Region of your choice.
             client = boto3.client("bedrock-runtime", region_name="us-east-1")
 
@@ -57,7 +56,7 @@ def process_sqs_p1_message():
             native_request = {
                 "inputText": prompt,
                 "textGenerationConfig": {
-                    "maxTokenCount": 512,
+                    "maxTokenCount": 1024,
                     "temperature": 0.3,
                 },
             }
@@ -73,14 +72,12 @@ def process_sqs_p1_message():
             # Decode the response body.
             model_response = json.loads(ai_response["body"].read())
 
-
-     
             # Extract and print the response text.
             response_text = model_response["results"][0]["outputText"]
             print(response_text)
-            
-            formatted_message = f"**Bug report description:**\n\n{description}\n\n\n**Suggested solution:**\n\n{response_text}"
-            
+
+            formatted_message = f"Bug report description:\n{description}\n\nSuggested solution:\n{response_text}"
+
             # Sending the message to teams
             print("Sending message to Microsoft Teams...")
             teams_message = pymsteams.connectorcard(TEAMS_WEBHOOK_URL)
