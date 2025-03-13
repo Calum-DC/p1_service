@@ -71,14 +71,10 @@ def process_sqs_p1_message():
             )
 
             # Decode the response body.
-            # model_response = json.loads(ai_response["body"].read())
+            model_response = json.loads(ai_response["body"].read())
 
 
-            body = ai_response["body"].read()
-            print("AI Response Body:", body)  # Log the raw response to check
-            model_response = json.loads(body)
-
-            
+     
             # Extract and print the response text.
             response_text = model_response["results"][0]["outputText"]
             print(response_text)
@@ -121,4 +117,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Shutting down...")
         stop_flag = True
-        background_thread.join()
+        bg_thread.join()
