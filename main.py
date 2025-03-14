@@ -43,10 +43,7 @@ def process_sqs_p1_message():
 
             # Use the native inference API to send a text message to Amazon Titan Text
             # and print the response stream.
-            # Create a Bedrock Runtime client in the AWS Region of your choice.
-
-
-            
+            # Create a Bedrock Runtime client 
             client = boto3.client("bedrock-runtime", region_name="us-east-1")
 
             # Set the model ID, e.g., Titan Text Premier.
@@ -72,11 +69,6 @@ def process_sqs_p1_message():
             except client.exceptions.EndpointConnectionError as e:
                 print(f"Error connecting to the AI model endpoint: {str(e)}")
 
-            # # Invoke the model with the request.
-            # ai_response = client.invoke_model(
-            #     modelId=model_id, body=ai_request
-            # )
-
             # Decode the response body.
             model_response = json.loads(ai_response["body"].read())
 
@@ -84,7 +76,7 @@ def process_sqs_p1_message():
             response_text = model_response["results"][0]["outputText"]
             print(response_text)
 
-            formatted_message = f"Bug report description:\n{description}\n\nSuggested solution:\n{response_text}"
+            formatted_message = f"**Bug report description:**\n{description}\n\n**Suggested solution:**\n{response_text}"
 
             # Sending the message to teams
             print("Sending message to Microsoft Teams...")
